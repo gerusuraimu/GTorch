@@ -65,13 +65,13 @@ def get_config(model: Union[str, None]) -> Union[Config, None]:
     config: Union[Config, None] = None
     if isinstance(model, str):
 
-        # modelがアーキテクチャ名だった場合の処理
+        # modelがアーキテクチャ名だった場合
         if model in Models.architecture():
             config = Config()
             config.architecture = model
             config.device = config.get_device()
 
-        # modelが訓練結果を保存したディレクトリ名だった場合の処理
+        # modelが訓練結果を保存したディレクトリ名だった場合
         elif os.path.isdir(model):
             config = get_pickle(model)
 
