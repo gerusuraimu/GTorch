@@ -1,0 +1,1 @@
+from .ModelList import architecture
