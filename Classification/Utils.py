@@ -18,6 +18,25 @@ from DataModels import Config
 
 
 def get_config(model: Union[str, None]) -> Union[Config, None]:
+    def choice_file(_list):
+        for i, file in enumerate(_list):
+            print(f'{i}: {file}')
+
+        print('\n使用するファイルの番号を入力してください')
+
+        while True:
+            print(f'例: {_list[0]}を使用する -> "0"と(数字だけ)入力')
+            index = input()
+            if re.match(r'\d+', index):
+                index = int(index)
+                if 0 <= index < len(_list):
+                    ret = _list[index]
+                    print(f'{ret}を使用します')
+                    break
+                else:
+                    print('入力値が不正です')
+        return ret
+
     def open_pickle(file: str) -> Config:
         with open(file, 'rb') as f:
             conf: Config = pickle.load(f)
@@ -28,37 +47,25 @@ def get_config(model: Union[str, None]) -> Union[Config, None]:
         config_file: list = [os.path.join(_dir, file) for file in os.listdir(_dir) if file.endswith('.pickle')]
 
         if config_file:
-            if os.path.isfile(config_file[0]):
-                conf = open_pickle(config_file[0])
-                conf.results = _dir
+            file: Union[str, None] = None
+            if len(config_file) == 1:
+                file = config_file[0]
+            elif 1 < len(config_file):
+                file = choice_file(config_file)
 
-                if choice:
-                    pt_list = [file for file in os.listdir(_dir) if file.endswith('.pt')]
-                    ox_list = [file for file in os.listdir(_dir) if file.endswith('.onnx')]
-                    en_list = [file for file in os.listdir(_dir) if file.endswith('.engine')]
-                    model_list = pt_list + ox_list + en_list
+            conf = open_pickle(file)
+            conf.results = _dir
 
-                    if len(model_list) == 1:
-                        conf.model = model_list[0]
-                    elif 1 < len(model_list):
-                        print('--- Choose model file ---')
+            if choice:
+                pt_list = [file for file in os.listdir(_dir) if file.endswith('.pt')]
+                ox_list = [file for file in os.listdir(_dir) if file.endswith('.onnx')]
+                en_list = [file for file in os.listdir(_dir) if file.endswith('.engine')]
+                model_list = pt_list + ox_list + en_list
 
-                        for i, file in enumerate(model_list):
-                            print(f'{i}: {file}')
-
-                        print('使用するモデルの番号を入力してください\n')
-
-                        while True:
-                            print(f'例: {model_list[0]}を使用する -> "0"と(数字だけ)入力')
-                            index = input()
-                            if re.match(r'\d+', index):
-                                index = int(index)
-                                if 0 <= index < len(model_list):
-                                    conf.model = model_list[index]
-                                    print(f'{conf.model}を使用します')
-                                    break
-                                else:
-                                    print('入力値が不正です')
+                if len(model_list) == 1:
+                    conf.model = model_list[0]
+                elif 1 < len(model_list):
+                    conf.model = choice_file(model_list)
 
         return conf
 
