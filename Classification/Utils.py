@@ -37,11 +37,6 @@ def get_config(model: Union[str, None]) -> Union[Config, None]:
                     print('入力値が不正です')
         return ret
 
-    def open_pickle(file: str) -> Config:
-        with open(file, 'rb') as f:
-            conf: Config = pickle.load(f)
-        return conf
-
     def get_pickle(_dir: str, choice: bool = False) -> Union[Config, None]:
         conf: Union[Config, None] = None
         config_file: list = [os.path.join(_dir, file) for file in os.listdir(_dir) if file.endswith('.pickle')]
@@ -53,7 +48,8 @@ def get_config(model: Union[str, None]) -> Union[Config, None]:
             elif 1 < len(config_file):
                 file = choice_file(config_file)
 
-            conf = open_pickle(file)
+            with open(file, 'rb') as pkl:
+                conf = pickle.load(pkl)
             conf.results = _dir
 
             if choice:
