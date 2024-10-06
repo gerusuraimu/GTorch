@@ -20,7 +20,7 @@ class GTorchBase:
         """
 
         self.config: Union[Config, None] = Utils.get_config(model)
-        self.model: Union[Any, None] = Utils.get_model(model, self.config)
+        self.model: Union[Any, None] = Utils.get_model(self.config)
         self.is_run: bool = False if model is None else True
 
     @staticmethod
