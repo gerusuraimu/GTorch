@@ -1,20 +1,14 @@
 import os
 import re
 import pickle
-from typing import List
-from typing import Union
-from typing import Optional
+from typing import List, Union, Optional
 
 import cv2 as cv
 import numpy as np
-from PIL import Image
-from PIL import ImageFile
+from PIL import Image, ImageFile
 
 import torch
-from torchvision.transforms import Resize
-from torchvision.transforms import Compose
-from torchvision.transforms import ToTensor
-from torchvision.transforms import Normalize
+from torchvision.transforms import Resize, Compose, ToTensor, Normalize
 
 import Models
 from DataModels import Config

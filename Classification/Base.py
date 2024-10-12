@@ -1,6 +1,4 @@
-from typing import List
-from typing import Any
-from typing import Optional
+from typing import List, Any, Optional
 from DataModels import Config
 import Utils
 import Models
