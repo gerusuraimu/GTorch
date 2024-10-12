@@ -7,11 +7,10 @@ import numpy as np
 from PIL import Image, ImageFile
 
 import torch
-from numpy.ma.extras import hsplit
 from torchvision import models
 from torchvision.transforms import Resize, Compose, ToTensor, Normalize
 
-from . import Models
+from . import ModelList
 from .DataModels import Config
 
 
@@ -75,7 +74,7 @@ def get_config(model: Optional[str]) -> Optional[Config]:
     if isinstance(model, str):
 
         # modelがアーキテクチャ名だった場合
-        if model in set(Models.architecture()):
+        if model in set(ModelList.architecture()):
             config = Config()
             config.architecture = model
             config.device = config.get_device()

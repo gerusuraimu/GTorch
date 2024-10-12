@@ -2,7 +2,7 @@ import os
 from typing import List, Any, Optional
 from .DataModels import Config
 from . import Utils
-from . import Models
+from . import ModelList
 from .. import Errors
 
 
@@ -33,7 +33,7 @@ class GTorchBase:
 
     @staticmethod
     def architecture() -> list:
-        return Models.architecture()
+        return ModelList.architecture()
 
     def predict(self):
         if not self.is_run:
