@@ -13,7 +13,7 @@ def alexnet(weights: bool = False, progress: bool = True) -> AlexNet:
 
 
 def custom(model: AlexNet, config):
-    features = model.classifier[-1].in_features
+    features: int = model.classifier[-1].in_features
     model.classifier[-1] = Linear(features, config.classes)
 
     if config.custom_in_gray:
