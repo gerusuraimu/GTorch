@@ -1,5 +1,9 @@
+from typing import List
+
+
 def architecture() -> list:
-    arch = ['AlexNet',
+    arch: List[str] = [
+            'AlexNet',
             'ConvNeXt_Tiny', 'ConvNeXt_Small', 'ConvNeXt_Base', 'ConvNeXt_Large',
             'DenseNet121', 'DenseNet161', 'DenseNet169', 'DenseNet169', 'DenseNet201',
             'EfficientNet_B0', 'EfficientNet_B1', 'EfficientNet_B2', 'EfficientNet_B3',
@@ -23,5 +27,6 @@ def architecture() -> list:
             'SwinTransformerV2_T', 'SwinTransformerV2_S', 'SwinTransformerV2_B',
             'VGG11', 'VGG11_BN', 'VGG13', 'VGG13_BN', 'VGG16', 'VGG16_BN', 'VGG19', 'VGG19_BN',
             'ViT_B_16', 'ViT_B_32', 'ViT_L_16', 'ViT_L_32', 'ViT_H_14',
-            'WideResNet50_2', 'WideResNet101_2']
+            'WideResNet50_2', 'WideResNet101_2'
+    ]
     return arch

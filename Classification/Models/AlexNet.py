@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Optional
 from torch.nn import Linear
 from torch.nn import Conv2d
 from torchvision.models import AlexNet
@@ -6,8 +6,8 @@ from torchvision.models import alexnet as network
 from torchvision.models import AlexNet_Weights as Weights
 
 
-def alexnet(weights: bool = True, progress: bool = True) -> AlexNet:
-    weights: Union[Weights, None] = Weights.DEFAULT if weights else None
+def alexnet(weights: bool = False, progress: bool = True) -> AlexNet:
+    weights: Optional[Weights] = Weights.DEFAULT if weights else None
     model = network(weights=weights, progress=progress)
     return model
 

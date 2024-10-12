@@ -1,13 +1,16 @@
 import os
 import re
 import pickle
+from typing import List
 from typing import Union
+from typing import Optional
 
 import cv2 as cv
 import numpy as np
 from PIL import Image
 from PIL import ImageFile
 
+import torch
 from torchvision.transforms import Resize
 from torchvision.transforms import Compose
 from torchvision.transforms import ToTensor
@@ -17,8 +20,14 @@ import Models
 from DataModels import Config
 
 
-def get_config(model: Union[str, None]) -> Union[Config, None]:
-    def choice_file(_list):
+def get_config(model: Optional[str]) -> Optional[Config]:
+    """
+
+    :param model:
+    :return:
+    """
+
+    def choice_file(_list: List[str]) -> str:
         for i, file in enumerate(_list):
             print(f'{i}: {file}')
 
@@ -37,12 +46,12 @@ def get_config(model: Union[str, None]) -> Union[Config, None]:
                     print('入力値が不正です')
         return ret
 
-    def get_pickle(_dir: str, choice: bool = False) -> Union[Config, None]:
-        conf: Union[Config, None] = None
+    def get_pickle(_dir: str, choice: bool = False) -> Optional[Config]:
+        conf: Optional[Config] = None
         config_file: list = [os.path.join(_dir, file) for file in os.listdir(_dir) if file.endswith('.pickle')]
 
         if config_file:
-            file: Union[str, None] = None
+            file: Optional[str] = None
             if len(config_file) == 1:
                 file = config_file[0]
             elif 1 < len(config_file):
@@ -65,11 +74,11 @@ def get_config(model: Union[str, None]) -> Union[Config, None]:
 
         return conf
 
-    config: Union[Config, None] = None
+    config: Optional[Config] = None
     if isinstance(model, str):
 
         # modelがアーキテクチャ名だった場合
-        if model in Models.architecture():
+        if model in set(Models.architecture()):
             config = Config()
             config.architecture = model
             config.device = config.get_device()
@@ -104,10 +113,10 @@ def get_transform(config: Config) -> Compose:
     return transform
 
 
-def get_image(transform: Compose, image: Union[str, np.ndarray, ImageFile], config: Config) -> ImageFile:
+def get_image(transform: Compose, image: Union[str, np.ndarray, ImageFile], device: torch.device) -> ImageFile:
     if isinstance(image, str):
         image = Image.open(image)
     elif isinstance(image, np.ndarray):
         image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
         image = Image.fromarray(image)
-    return transform(image).unsqueeze(0).to(config.device)
+    return transform(image).unsqueeze(0).to(device)

@@ -1,48 +1,51 @@
+from typing import List
+from typing import Tuple
 from typing import Union
+from typing import Optional
 from dataclasses import dataclass
 import torch
 
 
 @dataclass
 class ConfigBase:
-    architecture:  str                = None                   # 使用アーキテクチャ名
-    results:       str                = None                   # 訓練したモデルを保存しているディレクトリ
-    model:         str                = None                   # 保存される（読み込んだ）モデルのファイル名
-    imgsz:         Union[int, tuple]  = (320, 320)             # 入力画像のサイズ ... (H, W)
-    classes:       int                = None                   # 分類クラス数
+    architecture:  Optional[str]          = None                   # 使用アーキテクチャ名
+    results:       Optional[str]          = None                   # 訓練したモデルを保存しているディレクトリ
+    model:         Optional[str]          = None                   # 保存される（読み込んだ）モデルのファイル名
+    imgsz:         Tuple[int]             = (320, 320)             # 入力画像のサイズ ... (H, W)
+    classes:       Optional[int]          = None                   # 分類クラス数
 
-    epoch:         int                = 100                    # 学習エポック数
-    batch:         int                = 64                     # 学習バッチサイズ
-    worker:        int                = 2                      # 学習時ワーカー数
-    lr:            float              = 0.0001                 # 学習率
-    weights:       bool               = True                   # PyTorchの事前学習済み重みを使用するかどうか
-    early_stop:    int                = 50                     # 学習中に精度が向上しなかった場合に早期学習終了を判断するエポック数
+    epoch:         int                    = 100                    # 学習エポック数
+    batch:         int                    = 64                     # 学習バッチサイズ
+    worker:        int                    = 2                      # 学習時ワーカー数
+    lr:            float                  = 0.0001                 # 学習率
+    weights:       bool                   = True                   # PyTorchの事前学習済み重みを使用するかどうか
+    early_stop:    int                    = 50                     # 学習中に精度が向上しなかった場合に早期学習終了を判断するエポック数
 
-    device:        torch.device       = None                   # 学習に使用するデバイス(CUDA, MPS, CPU)
-    pin_memory:    bool               = True                   # ピンメモリーを使用するかどうか
-    mean:          tuple              = (0.485, 0.456, 0.406)  # Normalizeのmean値
-    std:           tuple              = (0.229, 0.224, 0.225)  # Normalizeのstd値
+    device:        Optional[torch.device] = None                   # 学習に使用するデバイス(CUDA, MPS, CPU)
+    pin_memory:    bool                   = True                   # ピンメモリーを使用するかどうか
+    mean:          Tuple[float]           = (0.485, 0.456, 0.406)  # Normalizeのmean値
+    std:           Tuple[float]           = (0.229, 0.224, 0.225)  # Normalizeのstd値
 
-    save_dir:      str                = 'results'              # 学習結果を保存するディレクトリ(exists_ok=True)
-    train_dir:     str                = 'dataset/train'        # 学習用データがあるディレクトリ
-    valid_dir:     str                = 'dataset/valid'        # バリデーション用データがあるディレクトリ
-    test_dir:      str                = 'dataset/test'         # テスト用データがあるディレクトリ
+    save_dir:      str                    = 'results'              # 学習結果を保存するディレクトリ(exists_ok=True)
+    train_dir:     str                    = 'dataset/train'        # 学習用データがあるディレクトリ
+    valid_dir:     str                    = 'dataset/valid'        # バリデーション用データがあるディレクトリ
+    test_dir:      str                    = 'dataset/test'         # テスト用データがあるディレクトリ
 
 
 @dataclass
 class TrainDataBase:
-    early_stop:    int                = 0                      # 精度が向上しなかった連続エポック数をカウント
-    best_acc:      float              = 0.0000                 # 最も高かった精度の数値
-    train_acc:     float              = 0.0000                 # 直近1エポックの精度
-    valid_acc:     float              = 0.0000                 # 直近1バリデーションの精度
-    train_loss:    float              = 0.0000                 # 直近1エポックの損失
-    valid_loss:    float              = 0.0000                 # 直近1バリデーションの損失
+    early_stop:    int                    = 0                      # 精度が向上しなかった連続エポック数をカウント
+    best_acc:      float                  = 0.0000                 # 最も高かった精度の数値
+    train_acc:     float                  = 0.0000                 # 直近1エポックの精度
+    valid_acc:     float                  = 0.0000                 # 直近1バリデーションの精度
+    train_loss:    float                  = 0.0000                 # 直近1エポックの損失
+    valid_loss:    float                  = 0.0000                 # 直近1バリデーションの損失
 
 
 class Config(ConfigBase):
     @staticmethod
     def get_device() -> torch.device:
-        device = torch.device('cpu')
+        device: torch.device = torch.device('cpu')
         if torch.cuda.is_available():
             device = torch.device('cuda')
         elif torch.backends.mps.is_available():
@@ -51,13 +54,11 @@ class Config(ConfigBase):
 
     def __repr__(self) -> str:
         distance: int = 12
-        reprs: str = '=' * 15 + ' Config ' + '=' * 15 + '\n'
+        separator: str = '=' * 38
+        header: str = f"{'=' * 15} Config {'=' * 15}\n"
 
-        for k, v in self.__dict__.items():
-            length: int = distance - len(k)
-            reprs += k + ' ' * length + ' : ' + str(v) + '\n'
-
-        reprs += '=' * 38 + '\n'
+        body: str = '\n'.join(f"{key.ljust(distance)} : {value}" for key, value in self.__dict__.items())
+        reprs: str = f"{header}{body}\n{separator}\n"
         return reprs
 
 
@@ -83,41 +84,34 @@ class Labels:
             self.labels[value] += 1
 
     def __repr__(self) -> str:
-        if 999 < self.classes:
+        if self.classes > 999:
             return ''
 
         w: int = 8
-        s: str = ' '
-        r: str = '\n'
         sep: str = '|'
         sep_h: str = '||'
         base: str = 'Label'
 
         def header() -> str:
-            ret: str = s * (w+1) + sep_h
+            part: List[str] = [' ' * (w + 1) + sep_h]
             for i in range(len(self.labels)):
-                l: int = w - len(str(i)) - len(base)
-                ret += s * l + base + s + str(i) + sep
-            ret += r
-            return ret
+                label: str = f" {base} {i} "
+                part.append(label.rjust(w) + sep)
+            return ''.join(part) + '\n'
 
-        def separator():
-            ret: str = '=' * 10 * (len(self.labels) + 1) + '='
-            ret += r
-            return ret
+        def separator() -> str:
+            return '=' * (10 * (len(self.labels) + 1) + 1) + '\n'
 
         def body(my_num: int) -> str:
-            l: int = w - len(str(my_num)) - len(base)
-            ret: str = base + s + str(my_num) + s * l + sep_h
-            for v in self.labels.values():
-                l: int = (w+1) - len(str(v))
-                ret += s * l + str(v) + sep
-            return ret
+            part: List[str] = [f"{base} {my_num}".ljust(w + 1) + sep_h]
+            for value in self.labels.values():
+                part.append(str(value).rjust(w + 1) + sep)
+            return ''.join(part)
 
-        reprs = ''
-        if not bool(self.my_num):
-            reprs += header()
-        reprs += separator()
-        reprs += body(self.my_num)
+        parts: List[str] = []
+        if not self.my_num:
+            parts.append(header())
+        parts.append(separator())
+        parts.append(body(self.my_num))
 
-        return reprs
+        return ''.join(parts)

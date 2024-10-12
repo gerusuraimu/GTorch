@@ -1,5 +1,6 @@
+from typing import List
 from typing import Any
-from typing import Union
+from typing import Optional
 from DataModels import Config
 import Utils
 import Models
@@ -7,7 +8,7 @@ import Errors
 
 
 class GTorchBase:
-    def __init__(self, model: Union[str, None]):
+    def __init__(self, model: Optional[str]):
         """
         - v0.0 -
         モデルと設定の定義だけ実行する。
@@ -19,8 +20,8 @@ class GTorchBase:
                               => インスタンス化の際はarchitecture()以外のメソッドは実行不可になる。
         """
 
-        self.config: Union[Config, None] = Utils.get_config(model)
-        self.model: Union[Any, None] = Utils.get_model(self.config)
+        self.config: Optional[Config] = Utils.get_config(model)
+        self.model: Optional[Any] = Utils.get_model(self.config)
         self.is_run: bool = False if model is None else True
 
     @staticmethod
@@ -45,24 +46,26 @@ class GTorchBase:
 
 
 class GTorch(GTorchBase):
-    def __init__(self, model: Union[str, None] = None):
+    def __init__(self, model: Optional[str] = None):
         super().__init__(model)
 
     def __call__(self):
         return self.predict()
 
     def __repr__(self) -> str:
-        scripts  = '= 関数一覧 =\n'
-        scripts += '  predict(image: Union[str, numpy.ndarray, PIL.ImageFile]) ... 推論を行う関数\n'
-        scripts += '     -> 引数"image"は画像ファイルのパス、OpenCV、Pillowのいずれかの形式を想定しています。\n'
-        scripts += '  train() ... 訓練を行う関数\n'
-        scripts += '     -> "config"の設定に問題がなければ訓練を実行します。\n'
-        scripts += '  benchmark() ... ベンチマークを行う関数。\n'
-        scripts += '     -> "config"の"test_dir"に設定されたパスにあるテスト用データで精度と速度のテストを行い、結果を表示します。\n'
-        scripts += '  architecture() ... 使用できるモデル一覧を取得\n'
-        scripts += '     -> この関数で取得できる文字列をそのままインスタンス化時の引数として使用してください。(ResNet18とか)\n'
-        return scripts
+        lines: List[str] = [
+            '= 関数一覧 =',
+            '  predict(image: Union[str, numpy.ndarray, PIL.ImageFile]) ... 推論を行う関数',
+            '     -> 引数"image"は画像ファイルのパス、OpenCV、Pillowのいずれかの形式を想定しています。',
+            '  train() ... 訓練を行う関数',
+            '     -> "config"の設定に問題がなければ訓練を実行します。',
+            '  benchmark() ... ベンチマークを行う関数。',
+            '     -> "config"の"test_dir"に設定されたパスにあるテスト用データで精度と速度のテストを行い、結果を表示します。',
+            '  architecture() ... 使用できるモデル一覧を取得',
+            '     -> この関数で取得できる文字列をそのままインスタンス化時の引数として使用してください。(ResNet18とか)'
+        ]
+        return '\n'.join(lines)
 
 
 mod = GTorch('ResNet18')
-print(mod.config)
+print(mod)
