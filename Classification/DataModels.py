@@ -1,6 +1,4 @@
-from typing import List
-from typing import Tuple
-from typing import Optional
+from typing import List, Tuple, Optional
 from dataclasses import dataclass
 import torch
 
