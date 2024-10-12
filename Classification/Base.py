@@ -1,12 +1,13 @@
+import os
 from typing import List, Any, Optional
-from DataModels import Config
-import Utils
-import Models
-import Errors
+from .DataModels import Config
+from . import Utils
+from . import Models
+from .. import Errors
 
 
 class GTorchBase:
-    def __init__(self, model: Optional[str]):
+    def __init__(self, model: Optional[str], train_dir: Optional[str], valid_dir: Optional[str], test_dir: Optional[str]):
         """
         - v0.0 -
         モデルと設定の定義だけ実行する。
@@ -19,6 +20,14 @@ class GTorchBase:
         """
 
         self.config: Optional[Config] = Utils.get_config(model)
+
+        if self.config is not None:
+            self.config.train_dir = train_dir
+            self.config.valid_dir = valid_dir
+            self.config.test_dir = test_dir
+            if self.config.train_dir is not None:
+                self.config.classes = len([_dir for _dir in os.listdir(self.config.train_dir) if os.path.isdir(os.path.join(self.config.train_dir, _dir))])
+
         self.model: Optional[Any] = Utils.get_model(self.config)
         self.is_run: bool = False if model is None else True
 
@@ -44,8 +53,8 @@ class GTorchBase:
 
 
 class GTorch(GTorchBase):
-    def __init__(self, model: Optional[str] = None):
-        super().__init__(model)
+    def __init__(self, model: Optional[str] = None, train_dir: Optional[str] = None, valid_dir: Optional[str] = None, test_dir: Optional[str] = None):
+        super().__init__(model, train_dir, valid_dir, test_dir)
 
     def __call__(self):
         return self.predict()
@@ -63,7 +72,3 @@ class GTorch(GTorchBase):
             '     -> この関数で取得できる文字列をそのままインスタンス化時の引数として使用してください。(ResNet18とか)'
         ]
         return '\n'.join(lines)
-
-
-mod = GTorch('ResNet18')
-print(mod)
