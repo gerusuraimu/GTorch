@@ -21,12 +21,6 @@ from DataModels import Config
 
 
 def get_config(model: Optional[str]) -> Optional[Config]:
-    """
-
-    :param model:
-    :return:
-    """
-
     def choice_file(_list: List[str]) -> str:
         for i, file in enumerate(_list):
             print(f'{i}: {file}')
@@ -48,7 +42,7 @@ def get_config(model: Optional[str]) -> Optional[Config]:
 
     def get_pickle(_dir: str, choice: bool = False) -> Optional[Config]:
         conf: Optional[Config] = None
-        config_file: list = [os.path.join(_dir, file) for file in os.listdir(_dir) if file.endswith('.pickle')]
+        config_file: List[str] = [os.path.join(_dir, file) for file in os.listdir(_dir) if file.endswith('.pickle')]
 
         if config_file:
             file: Optional[str] = None
@@ -62,10 +56,10 @@ def get_config(model: Optional[str]) -> Optional[Config]:
             conf.results = _dir
 
             if choice:
-                pt_list = [file for file in os.listdir(_dir) if file.endswith('.pt')]
-                ox_list = [file for file in os.listdir(_dir) if file.endswith('.onnx')]
-                en_list = [file for file in os.listdir(_dir) if file.endswith('.engine')]
-                model_list = pt_list + ox_list + en_list
+                pt_list: List[str] = [file for file in os.listdir(_dir) if file.endswith('.pt')]
+                ox_list: List[str] = [file for file in os.listdir(_dir) if file.endswith('.onnx')]
+                en_list: List[str] = [file for file in os.listdir(_dir) if file.endswith('.engine')]
+                model_list: List[str] = pt_list + ox_list + en_list
 
                 if len(model_list) == 1:
                     conf.model = model_list[0]

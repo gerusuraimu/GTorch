@@ -1,6 +1,5 @@
 from typing import List
 from typing import Tuple
-from typing import Union
 from typing import Optional
 from dataclasses import dataclass
 import torch
