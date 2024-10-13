@@ -3,6 +3,7 @@ from typing import List, Any, Optional
 from .DataModels import Config
 from . import Utils
 from . import ModelList
+from . import Trainer
 from .. import Errors
 
 
@@ -38,6 +39,9 @@ class GTorchBase:
     def predict(self):
         if not self.is_run:
             self.send_is_run_error()
+
+        trainer = Trainer.Trainer(self.config, self.model)
+        trainer.train()
 
     def train(self):
         if not self.is_run:
