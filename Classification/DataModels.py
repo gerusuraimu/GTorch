@@ -1,6 +1,7 @@
 from typing import List, Tuple, Optional
 from dataclasses import dataclass
 import torch
+import numpy as np
 
 
 @dataclass
@@ -23,7 +24,7 @@ class ConfigBase:
     mean:          Tuple[float]           = (0.485, 0.456, 0.406)  # Normalizeのmean値
     std:           Tuple[float]           = (0.229, 0.224, 0.225)  # Normalizeのstd値
 
-    save_dir:      str                    = 'results'              # 学習結果を保存するディレクトリ(exists_ok=True)
+    save_dir:      str                    = 'results'              # 学習結果を保存するディレクトリ(exists_ok=False)
     train_dir:     str                    = 'dataset/train'        # 学習用データがあるディレクトリ
     valid_dir:     str                    = 'dataset/valid'        # バリデーション用データがあるディレクトリ
     test_dir:      str                    = 'dataset/test'         # テスト用データがあるディレクトリ
@@ -32,7 +33,8 @@ class ConfigBase:
 @dataclass
 class TrainDataBase:
     early_stop:    int                    = 0                      # 精度が向上しなかった連続エポック数をカウント
-    best_acc:      float                  = 0.0000                 # 最も高かった精度の数値
+    best_acc:      float                  = 0.0000                 # 最も高かった精度
+    best_loss:     float                  = np.inf                 # best_accの時に最も低かった損失
     train_acc:     float                  = 0.0000                 # 直近1エポックの精度
     valid_acc:     float                  = 0.0000                 # 直近1バリデーションの精度
     train_loss:    float                  = 0.0000                 # 直近1エポックの損失
@@ -61,11 +63,12 @@ class Config(ConfigBase):
 
 class TrainData(TrainDataBase):
     def __repr__(self) -> str:
-        ret: str = (f' - Train Accuracy: {self.train_acc:.4}'
+        ret: str = (f' - Train Accuracy: {self.train_acc:.4f}'
                     f' - Train Loss: {self.train_loss:.4f}'
-                    f' - Valid Accuracy: {self.valid_acc:.4}'
+                    f' - Valid Accuracy: {self.valid_acc:.4f}'
                     f' - Valid Loss: {self.valid_loss:.4f}'
-                    f' - Best Accuracy: {self.best_acc:.4}'
+                    f' - Best Accuracy: {self.best_acc:.4f}'
+                    f' - Best Loss: {self.best_loss:.4f}'
                     f' - Early Stop: {self.early_stop}')
         return ret
 
