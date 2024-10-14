@@ -146,7 +146,7 @@ def get_transform(config: Config) -> Compose:
     return transform
 
 
-def get_image(transform: Compose, image: Union[str, np.ndarray, Image], device: torch.device) -> ImageFile:
+def get_image(transform: Compose, image: Union[str, np.ndarray, Image.Image], device: torch.device) -> ImageFile:
     if isinstance(image, str):
         image = Image.open(image)
     elif isinstance(image, np.ndarray):
