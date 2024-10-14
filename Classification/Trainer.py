@@ -22,7 +22,6 @@ class Trainer:
         self.config:        Config           = config
         self.transform:     Compose          = Utils.get_transform(config)
         self.data:          TrainData        = TrainData()
-        self.es_counter:    int              = 0
         self.best_accuracy: float            = 0.0
         self.test_accuracy: float            = 0.0
         self.criterion:     CrossEntropyLoss = CrossEntropyLoss()
@@ -34,7 +33,6 @@ class Trainer:
         self.valid_loader:  DataLoader       = self.get_dataloader(self.valid_dataset)
 
         self.model.to(self.config.device)
-
         os.makedirs(self.config.save_dir, exist_ok=False)
 
     def train(self):
@@ -57,7 +55,7 @@ class Trainer:
                 self.refresh_best(best_name)  # 訓練・バリデーションの結果からベストスコアを更新
                 self.write_log(log, epoch)    # ログ出力
 
-                if self.es_counter == self.config.early_stop:
+                if self.data.early_stop == self.config.early_stop:
                     print('Early Stop!!')
                     break
 
