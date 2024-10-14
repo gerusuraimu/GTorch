@@ -1,18 +1,21 @@
 import os
-from typing import List, Any, Optional
+from typing import List, Any, Union, Optional
+import torch
+import numpy as np
+from PIL import Image
 from .DataModels import Config
 from . import Utils
 from . import ModelList
 from . import Trainer
+from . import Predictor
 from .. import Errors
 
 
 class GTorchBase:
     def __init__(self, model: Optional[str], train_dir: str, valid_dir: str, test_dir: str):
         """
-        - v0.0 -
         モデルと設定の定義だけ実行する。
-        :param model: str  -> 独自データセットで訓練したモデルまたはモデルを含むディレクトリを指定。
+        :param model: str  -> 独自データセットで訓練したモデルもしくはモデルを含むディレクトリを指定。
                               又はPyTorchが持っている事前学習済みモデルのアーキテクチャを指定。（ResNet50とか）
                               使用できる事前学習済みモデルは"architecture()"で取得できる。
                               => 取得したリスト内の文字列をそのまま引数にすることを想定している。
@@ -26,7 +29,7 @@ class GTorchBase:
         self.config.valid_dir = valid_dir
         self.config.test_dir = test_dir
 
-        if self.config is not None:
+        if self.config is not None and self.config.classes is None:
             self.config.classes = len([_dir for _dir in os.listdir(self.config.train_dir) if os.path.isdir(os.path.join(self.config.train_dir, _dir))])
 
         self.model: Optional[Any] = Utils.get_model(self.config)
@@ -36,16 +39,19 @@ class GTorchBase:
     def architecture() -> list:
         return ModelList.architecture()
 
-    def predict(self):
+    def predict(self, image: Union[str, np.ndarray, Image.Image]) -> torch.Tensor:
         if not self.is_run:
             self.send_is_run_error()
 
-        trainer = Trainer.Trainer(self.config, self.model)
-        trainer.train()
+        predictor = Predictor.Predictor(self.config, self.model)
+        return predictor(image)
 
     def train(self):
         if not self.is_run:
             self.send_is_run_error()
+
+        trainer = Trainer.Trainer(self.config, self.model)
+        trainer()
 
     def benchmark(self):
         if not self.is_run:
@@ -65,7 +71,7 @@ class GTorch(GTorchBase):
 
         super().__init__(model, train_dir, valid_dir, test_dir)
 
-    def __call__(self):
+    def __call__(self, image: Union[str, np.ndarray, Image.Image]):
         return self.predict()
 
     def __repr__(self) -> str:
