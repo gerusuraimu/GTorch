@@ -35,6 +35,9 @@ class Trainer:
         self.model.to(self.config.device)
         os.makedirs(self.config.save_dir, exist_ok=False)
 
+    def __call__(self):
+        self.train()
+
     def train(self):
         train_accuracy: float
         valid_accuracy: float
