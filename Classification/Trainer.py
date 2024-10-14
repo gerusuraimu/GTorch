@@ -33,7 +33,6 @@ class Trainer:
         self.valid_loader:  DataLoader       = self.get_dataloader(self.valid_dataset)
 
         self.model.to(self.config.device)
-
         os.makedirs(self.config.save_dir, exist_ok=False)
 
     def train(self):

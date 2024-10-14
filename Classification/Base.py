@@ -8,7 +8,7 @@ from .. import Errors
 
 
 class GTorchBase:
-    def __init__(self, model: Optional[str], train_dir: Optional[str], valid_dir: Optional[str], test_dir: Optional[str]):
+    def __init__(self, model: Optional[str], train_dir: str, valid_dir: str, test_dir: str):
         """
         - v0.0 -
         モデルと設定の定義だけ実行する。
@@ -22,11 +22,11 @@ class GTorchBase:
 
         self.config: Optional[Config] = Utils.get_config(model)
 
+        self.config.train_dir = train_dir
+        self.config.valid_dir = valid_dir
+        self.config.test_dir = test_dir
+
         if self.config is not None:
-            self.config.train_dir = train_dir
-            self.config.valid_dir = valid_dir
-            self.config.test_dir = test_dir
-        if self.config is not None and self.config.train_dir is not None:
             self.config.classes = len([_dir for _dir in os.listdir(self.config.train_dir) if os.path.isdir(os.path.join(self.config.train_dir, _dir))])
 
         self.model: Optional[Any] = Utils.get_model(self.config)
@@ -57,7 +57,12 @@ class GTorchBase:
 
 
 class GTorch(GTorchBase):
-    def __init__(self, model: Optional[str] = None, train_dir: Optional[str] = None, valid_dir: Optional[str] = None, test_dir: Optional[str] = None):
+    def __init__(self,
+                 model:     Optional[str] = None,
+                 train_dir: str           = 'dataset/train',
+                 valid_dir: str           = 'dataset/valid',
+                 test_dir:  str           = 'dataset/test'):
+
         super().__init__(model, train_dir, valid_dir, test_dir)
 
     def __call__(self):
