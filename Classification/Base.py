@@ -26,7 +26,7 @@ class GTorchBase:
             self.config.train_dir = train_dir
             self.config.valid_dir = valid_dir
             self.config.test_dir = test_dir
-        if self.config.train_dir is not None:
+        if self.config is not None and self.config.train_dir is not None:
             self.config.classes = len([_dir for _dir in os.listdir(self.config.train_dir) if os.path.isdir(os.path.join(self.config.train_dir, _dir))])
 
         self.model: Optional[Any] = Utils.get_model(self.config)
